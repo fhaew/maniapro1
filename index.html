@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lotomania - Tabela e Jogos</title>
+<title>Lotomania - Tabela e Jogos com Vídeo de Fundo</title>
 <style>
 html, body {
   height: 100%;
@@ -13,30 +13,33 @@ html, body {
   color: white;
   text-align: center;
   overflow-x: hidden;
+  position: relative;
 }
 
-/* Papel de parede fixo ocupando toda a tela */
-body {
-  background-image: url('./img/wallpaper.jpg'); /* Imagem renomeada e simplificada */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  padding: 21px;
+/* Vídeo de fundo */
+#bgVideo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
 }
 
-#buttons { margin-bottom: 21px; }
+/* Botões */
+#buttons { margin-bottom: 21px; position: relative; z-index: 1; }
 button { padding: 10px 15px; margin: 5px; font-size: 14px; cursor: pointer; border-radius: 20px; }
 
 /* Caixa centralizada para a tabela */
-.tabela-container { display: flex; justify-content: center; margin: 20px auto; }
+.tabela-container { display: flex; justify-content: center; margin: 20px auto; position: relative; z-index: 1; }
 #tabela { display: none; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; flex-direction: column; gap: 5px; }
 
 /* Linhas da tabela */
 .linha-tabela { display: flex; justify-content: flex-start; align-items: center; gap: 5px; }
 .label-tabela { width: 20px; font-weight: bold; text-align: center; }
 
-/* Bolinhas da tabela - cores iguais aos jogos */
+/* Bolinhas da tabela */
 .ball-tabela { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: black; border: 2px solid transparent; }
 .line-A .ball-tabela { background: #FFA500; color: black; }
 .line-B .ball-tabela { background: #FFD700; color: black; }
@@ -49,7 +52,7 @@ button { padding: 10px 15px; margin: 5px; font-size: 14px; cursor: pointer; bord
 .line-I .ball-tabela { background: #1E90FF; color: white; }
 
 /* Container de jogos */
-#container { display: flex; flex-direction: column; align-items: center; }
+#container { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
 .bloco { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; width: 100%; }
 .jogo { display: flex; flex-direction: column; gap: 5px; border: 2px solid #5ac48d; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.7); }
 .linha { display: flex; gap: 3px; align-items: center; }
@@ -67,6 +70,12 @@ button { padding: 10px 15px; margin: 5px; font-size: 14px; cursor: pointer; bord
 </style>
 </head>
 <body>
+
+<!-- Vídeo de fundo sem loop -->
+<video id="bgVideo" autoplay muted>
+  <source src="./img/Standard_Mode_falling_in_slow_motion.mp4" type="video/mp4">
+  Seu navegador não suporta vídeo de fundo.
+</video>
 
 <div id="buttons">
   <button id="btnGenerate">Gerar Tabela</button>
@@ -102,8 +111,18 @@ function criarTabela(){
     tabelaNumeros[letra]=[];
     const linhaDiv=document.createElement("div");
     linhaDiv.classList.add("linha-tabela",`line-${letra}`);
-    const labelDiv=document.createElement("div"); labelDiv.classList.add("label-tabela"); labelDiv.textContent=letra; linhaDiv.appendChild(labelDiv);
-    for(let i=0;i<10;i++){ const b=document.createElement("div"); b.classList.add("ball-tabela"); let num=numeros[index++]; tabelaNumeros[letra].push(num); b.textContent=num; linhaDiv.appendChild(b);}
+    const labelDiv=document.createElement("div");
+    labelDiv.classList.add("label-tabela");
+    labelDiv.textContent=letra;
+    linhaDiv.appendChild(labelDiv);
+    for(let i=0;i<10;i++){
+      const b=document.createElement("div");
+      b.classList.add("ball-tabela");
+      let num=numeros[index++];
+      tabelaNumeros[letra].push(num);
+      b.textContent=num;
+      linhaDiv.appendChild(b);
+    }
     shuffleArray(tabelaNumeros[letra]);
     tabelaDiv.appendChild(linhaDiv);
   });
@@ -118,11 +137,9 @@ function gerar105Jogos(){
     if(i%4===0){ blocoDiv=document.createElement("div"); blocoDiv.classList.add("bloco"); container.appendChild(blocoDiv);}
     const jogoDiv=document.createElement("div"); jogoDiv.classList.add("jogo");
     const numeroJogo=document.createElement("div"); numeroJogo.style.fontWeight="bold"; numeroJogo.style.marginBottom="5px"; numeroJogo.style.textAlign="center"; numeroJogo.textContent="Jogo "+(i+1); jogoDiv.appendChild(numeroJogo);
-
     let linhasCima=[]; while(linhasCima.length<4){ let rand=letrasCima[Math.floor(Math.random()*letrasCima.length)]; if(!linhasCima.includes(rand)) linhasCima.push(rand);}
     let linhaBaixo=letrasBaixo[Math.floor(Math.random()*letrasBaixo.length)];
     let linhasJogo=[...linhasCima,linhaBaixo];
-
     linhasJogo.forEach(l=>{
       const linhaDiv=document.createElement("div"); linhaDiv.classList.add("linha",`line-${l}`);
       const labelDiv=document.createElement("div"); labelDiv.classList.add("label"); labelDiv.textContent=l; linhaDiv.appendChild(labelDiv);
