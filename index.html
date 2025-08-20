@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotomania - Tabela e Jogos</title>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+  overflow-x: hidden;
+} 
+
+/* Papel de parede fixo ocupando toda a tela */
+body {
+  background-image: url('./IMG/dark-abstract-3840x2160-contemporary-design-sleek-modern-26416.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 21px;
+}
+
+#buttons { margin-bottom: 21px; }
+button { padding: 10px 15px; margin: 5px; font-size: 14px; cursor: pointer; border-radius: 20px;}
+
+/* Caixa centralizada para a tabela */
+.tabela-container { display: flex; justify-content: center; margin: 20px auto; }
+#tabela { display: none; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 12px; flex-direction: column; gap: 5px; }
+
+/* Linhas da tabela */
+.linha-tabela { display: flex; justify-content: flex-start; align-items: center; gap: 5px; }
+.label-tabela { width: 20px; font-weight: bold; text-align: center; }
+
+/* Bolinhas da tabela - cores iguais aos jogos */
+.ball-tabela { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: black; border: 2px solid transparent; }
+.line-A .ball-tabela { background: #FFA500; color: black; }
+.line-B .ball-tabela { background: #FFD700; color: black; }
+.line-C .ball-tabela { background: #90EE90; color: black; }
+.line-D .ball-tabela { background: #00FA9A; color: black; }
+.line-E .ball-tabela { background: #32CD32; color: black; }
+.line-F .ball-tabela { background: #ADFF2F; color: black; }
+.line-G .ball-tabela { background: #FF4500; color: white; }
+.line-H .ball-tabela { background: #800080; color: white; }
+.line-I .ball-tabela { background: #1E90FF; color: white; }
+
+/* Container de jogos */
+#container { display: flex; flex-direction: column; align-items: center; }
+.bloco { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; width: 100%; }
+.jogo { display: flex; flex-direction: column; gap: 5px; border: 2px solid #5ac48d; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.7); }
+.linha { display: flex; gap: 3px; align-items: center; }
+.label { width: 20px; text-align: center; font-weight: bold; margin-right: 5px; }
+.ball { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid transparent; }
+.line-A .ball { background: #FFA500; color: black; }
+.line-B .ball { background: #FFD700; color: black; }
+.line-C .ball { background: #90EE90; color: black; }
+.line-D .ball { background: #00FA9A; color: black; }
+.line-E .ball { background: #32CD32; color: black; }
+.line-F .ball { background: #ADFF2F; color: black; }
+.line-G .ball { background: #FF4500; color: white; }
+.line-H .ball { background: #800080; color: white; }
+.line-I .ball { background: #1E90FF; color: white; }
+</style>
+</head>
+<body>
+
+<div id="buttons">
+  <button id="btnGenerate">Gerar Tabela</button>
+  <button id="btnClear">Limpar</button>
+  <button id="btnComb">Gerar 105 Jogos</button>
+  <button id="btnToggleTabela">Mostrar Tabela</button>
+  <button id="btnSave">Salvar Jogos</button>
+  <button id="btnLoad">Carregar Jogos</button>
+</div>
+
+<div class="tabela-container">
+  <div id="tabela"></div>
+</div>
+<div id="container"></div>
+
+<script>
+const letrasCima=["A","B","C","D","E","F"];
+const letrasBaixo=["G","H","I"];
+const todasLinhas=[...letrasCima,...letrasBaixo];
+let tabelaNumeros={};
+
+function shuffleArray(array){for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}}
+
+function criarTabela(){
+  tabelaNumeros={};
+  let numeros=Array.from({length:90},(_,i)=>i+11);
+  shuffleArray(numeros);
+  let index=0;
+  const tabelaDiv=document.getElementById("tabela");
+  tabelaDiv.innerHTML="";
+  tabelaDiv.style.display="flex";
+  todasLinhas.forEach(letra=>{
+    tabelaNumeros[letra]=[];
+    const linhaDiv=document.createElement("div");
+    linhaDiv.classList.add("linha-tabela",`line-${letra}`);
+    const labelDiv=document.createElement("div"); labelDiv.classList.add("label-tabela"); labelDiv.textContent=letra; linhaDiv.appendChild(labelDiv);
+    for(let i=0;i<10;i++){ const b=document.createElement("div"); b.classList.add("ball-tabela"); let num=numeros[index++]; tabelaNumeros[letra].push(num); b.textContent=num; linhaDiv.appendChild(b);}
+    shuffleArray(tabelaNumeros[letra]);
+    tabelaDiv.appendChild(linhaDiv);
+  });
+  document.getElementById("container").innerHTML="";
+}
+
+function gerar105Jogos(){
+  if(!tabelaNumeros||Object.keys(tabelaNumeros).length===0){alert("Primeiro gere a tabela!"); return;}
+  const container=document.getElementById("container"); container.innerHTML="";
+  let blocoDiv=null;
+  for(let i=0;i<105;i++){
+    if(i%4===0){ blocoDiv=document.createElement("div"); blocoDiv.classList.add("bloco"); container.appendChild(blocoDiv);}
+    const jogoDiv=document.createElement("div"); jogoDiv.classList.add("jogo");
+    const numeroJogo=document.createElement("div"); numeroJogo.style.fontWeight="bold"; numeroJogo.style.marginBottom="5px"; numeroJogo.style.textAlign="center"; numeroJogo.textContent="Jogo "+(i+1); jogoDiv.appendChild(numeroJogo);
+
+    let linhasCima=[]; while(linhasCima.length<4){ let rand=letrasCima[Math.floor(Math.random()*letrasCima.length)]; if(!linhasCima.includes(rand)) linhasCima.push(rand);}
+    let linhaBaixo=letrasBaixo[Math.floor(Math.random()*letrasBaixo.length)];
+    let linhasJogo=[...linhasCima,linhaBaixo];
+
+    linhasJogo.forEach(l=>{
+      const linhaDiv=document.createElement("div"); linhaDiv.classList.add("linha",`line-${l}`);
+      const labelDiv=document.createElement("div"); labelDiv.classList.add("label"); labelDiv.textContent=l; linhaDiv.appendChild(labelDiv);
+      tabelaNumeros[l].forEach(n=>{ const b=document.createElement("div"); b.classList.add("ball"); b.textContent=n; linhaDiv.appendChild(b);});
+      jogoDiv.appendChild(linhaDiv);
+    });
+    blocoDiv.appendChild(jogoDiv);
+  }
+}
+
+// Salvar e carregar jogos
+function salvarJogos(){ const jogos=Array.from(document.querySelectorAll("#container .jogo")).map(j=>j.innerHTML); if(jogos.length===0){alert("Não há jogos para salvar!"); return;} localStorage.setItem("lotomaniaJogos",JSON.stringify(jogos)); alert("Jogos salvos!"); }
+function carregarJogos(){ const jogosSalvos=JSON.parse(localStorage.getItem("lotomaniaJogos")); if(!jogosSalvos||jogosSalvos.length===0){alert("Nenhum jogo salvo!"); return;} const container=document.getElementById("container"); container.innerHTML=""; let blocoDiv=document.createElement("div"); blocoDiv.classList.add("bloco"); container.appendChild(blocoDiv); jogosSalvos.forEach(html=>{ const jogoDiv=document.createElement("div"); jogoDiv.classList.add("jogo"); jogoDiv.innerHTML=html; blocoDiv.appendChild(jogoDiv);});}
+
+document.getElementById("btnGenerate").addEventListener("click",criarTabela);
+document.getElementById("btnClear").addEventListener("click",()=>{document.getElementById("container").innerHTML="";document.getElementById("tabela").innerHTML="";document.getElementById("tabela").style.display="none";tabelaNumeros={};});
+document.getElementById("btnComb").addEventListener("click",gerar105Jogos);
+document.getElementById("btnSave").addEventListener("click",salvarJogos);
+document.getElementById("btnLoad").addEventListener("click",carregarJogos);
+document.getElementById("btnToggleTabela").addEventListener("click",()=>{const tabelaDiv=document.getElementById("tabela");if(tabelaDiv.style.display==="none"||tabelaDiv.style.display===""){tabelaDiv.style.display="flex";document.getElementById("btnToggleTabela").textContent="Ocultar Tabela";}else{tabelaDiv.style.display="none";document.getElementById("btnToggleTabela").textContent="Mostrar Tabela";}});
+
+// Inicializa tabela
+criarTabela();
+</script>
+</body>
+</html>
